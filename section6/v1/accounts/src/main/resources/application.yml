@@ -18,6 +18,27 @@ spring:
       ddl-auto: update
     show-sql: true
 
+  config:
+    import:
+      - "application_qa.yml"
+      - "application_prod.yml"
+
+  profiles:
+    active:
+      - "prod"
+
+build:
+  version: "3.0"
+
+accounts:
+  message: "Welcome to EazyBank accounts related local APIs"
+  contactDetails:
+    name: "Sushmit Patil - Developer"
+    email: "sushmit@gmail.com"
+  onCallSupport:
+    - (555) 555-1234
+    - (555) 523-1345
+
 #  datasource:
 #    url: jdbc:mysql://localhost:3306/accounts_db
 #   username: root

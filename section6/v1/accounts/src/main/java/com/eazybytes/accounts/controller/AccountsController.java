@@ -1,5 +1,9 @@
 package com.eazybytes.accounts.controller;
 
+import com.eazybytes.accounts.dto.AccountsContactInfoDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -37,8 +41,18 @@ import jakarta.validation.constraints.Pattern;
 		)
 public class AccountsController {
 	
-	private IAccountsService iAccountsService;
-	
+	private final IAccountsService iAccountsService;
+
+	@Value("${build.version}")
+	private String buildVersion;
+
+	@Autowired
+	private Environment environment;
+
+	@Autowired
+	private AccountsContactInfoDTO accountsContactInfoDto;
+
+	@Autowired
 	public AccountsController(IAccountsService iAccountsService) {
 		this.iAccountsService = iAccountsService;
 	}
@@ -165,5 +179,76 @@ public class AccountsController {
 					.status(HttpStatus.EXPECTATION_FAILED)
 					.body(new ResponseDTO(AccountsConstants.STATUS_417, AccountsConstants.MESSAGE_417_DELETE));
 		}
+	}
+
+	@Operation(
+			summary = "Get Build information",
+			description = "Get Build information that is deployed into accounts microservice"
+	)
+	@ApiResponses({
+			@ApiResponse(
+					responseCode = "200",
+					description = "HTTP Status OK"
+			),
+			@ApiResponse(
+					responseCode = "500",
+					description = "HTTP Status Internal Server Error",
+					content = @Content(
+							schema = @Schema(implementation = ErrorResponseDTO.class)
+					)
+			)
+	}
+	)
+	@GetMapping("/build-info")
+	public ResponseEntity<String> getBuildInfo(){
+		return ResponseEntity.status(HttpStatus.OK).body(buildVersion);
+	}
+
+	@Operation(
+			summary = "Get Java version",
+			description = "Get Java versions details that is installed into accounts microservice"
+	)
+	@ApiResponses({
+			@ApiResponse(
+					responseCode = "200",
+					description = "HTTP Status OK"
+			),
+			@ApiResponse(
+					responseCode = "500",
+					description = "HTTP Status Internal Server Error",
+					content = @Content(
+							schema = @Schema(implementation = ErrorResponseDTO.class)
+					)
+			)
+	}
+	)
+	@GetMapping("/java-version")
+	public ResponseEntity<String> getJavaVersion(){
+		return ResponseEntity.status(HttpStatus.OK).body(environment.getProperty("JAVA_HOME"));
+	}
+
+	@Operation(
+			summary = "Get Contact Info",
+			description = "Contact Info details that can be reached out in case of any issues"
+	)
+	@ApiResponses({
+			@ApiResponse(
+					responseCode = "200",
+					description = "HTTP Status OK"
+			),
+			@ApiResponse(
+					responseCode = "500",
+					description = "HTTP Status Internal Server Error",
+					content = @Content(
+							schema = @Schema(implementation = ErrorResponseDTO.class)
+					)
+			)
+	}
+	)
+	@GetMapping("/contact-info")
+	public ResponseEntity<AccountsContactInfoDTO> getContactInfo() {
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body(accountsContactInfoDto);
 	}
 }
