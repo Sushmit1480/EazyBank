@@ -2,12 +2,24 @@ spring:
   application:
     name: "configserver"
   profiles:
-    active: native
+#    git is put when we want to pull the config files from github repo so that it is not visible to everyone
+    active: git
+#    native is put if we are adding config files from same project or from local system
+#    active: native
   cloud:
     config:
       server:
-        native:
-          search-locations: "classpath:/config"
+        git:
+          uri: "https://github.com/Sushmit1480/eazybytes-config.git"
+          default-label: main
+          timeout: 5
+          clone-on-start: true
+          force-pull: true
+#        native:
+#          search-locations: "classpath:/config"
+
+encrypt:
+  key: "45D81EC1EF61DF9AD8D3E5BB397F9"
 
 server:
   port:
